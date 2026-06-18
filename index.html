@@ -10,7 +10,7 @@
         // URL AGGIORNATO: Aggiunto il percorso corretto '/api' per raggiungere lo script Python
         const API_URL = "https://fantamondiale-j1aq.vercel.app/"  
                 if (!response.ok) throw new Error("Server Response Error");
-                const dati = await response.json();
+                const dati = response.json();
                 console.log(dati)
                     </script>
 </body>

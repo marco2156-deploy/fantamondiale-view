@@ -155,18 +155,9 @@ h1::after {
 .card p { font-size: 1.1rem; font-weight: 600; opacity: 0.9; }
 .card .medal { font-size: 4rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
 
-.gold { 
-    background: linear-gradient(135deg, #fde047 0%, #eab308 100%); 
-    box-shadow: 0 10px 20px rgba(234, 179, 8, 0.2);
-}
-.silver { 
-    background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); 
-    box-shadow: 0 10px 20px rgba(203, 213, 225, 0.2);
-}
-.bronze { 
-    background: linear-gradient(135deg, #fed7aa 0%, #d97706 100%); 
-    box-shadow: 0 10px 20px rgba(217, 119, 6, 0.2);
-}
+.gold { background: linear-gradient(135deg, #fde047 0%, #eab308 100%); box-shadow: 0 10px 20px rgba(234, 179, 8, 0.2); }
+.silver { background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); box-shadow: 0 10px 20px rgba(203, 213, 225, 0.2); }
+.bronze { background: linear-gradient(135deg, #fed7aa 0%, #d97706 100%); box-shadow: 0 10px 20px rgba(217, 119, 6, 0.2); }
 
 /* SEZIONE 2: SQUADRE PARTECIPANTI */
 .teams-grid { 
@@ -195,10 +186,7 @@ h1::after {
     gap: 10px;
 }
 
-.team-card h3::before {
-    content: '👤';
-    font-size: 1.2rem;
-}
+.team-card h3::before { content: '👤'; font-size: 1.2rem; }
 
 .team-card ul { list-style: none; }
 .team-card li { 
@@ -209,17 +197,11 @@ h1::after {
     display: flex;
     align-items: center;
 }
-.team-card li::before {
-    content: '⚽';
-    margin-right: 10px;
-    font-size: 0.9rem;
-    opacity: 0.7;
-}
+.team-card li::before { content: '⚽'; margin-right: 10px; font-size: 0.9rem; opacity: 0.7; }
 .team-card li:last-child { border-bottom: none; }
 
-/* TABELLE */
+/* TABELLE DESKTOP */
 .table-container { 
-    overflow-x: auto; 
     background: var(--bg-card); 
     border-radius: 16px; 
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -228,12 +210,9 @@ h1::after {
 table { 
     width: 100%; 
     border-collapse: collapse; 
-    min-width: 700px; 
 }
 
-thead { 
-    background: rgba(0,0,0,0.2); 
-}
+thead { background: rgba(0,0,0,0.2); }
 
 th { 
     padding: 18px 15px; 
@@ -251,15 +230,14 @@ td {
     font-weight: 400;
 }
 
+.text-left { text-align: left; padding-left: 30px; font-weight: 600; }
+
 tbody tr { 
     border-bottom: 1px solid rgba(255,255,255,0.03); 
     transition: background 0.2s;
 }
 
-tbody tr:nth-child(even) {
-    background: rgba(255,255,255,0.01);
-}
-
+tbody tr:nth-child(even) { background: rgba(255,255,255,0.01); }
 tbody tr:hover { background: rgba(255,255,255,0.05); }
 
 .green { color: var(--success); font-weight: 600; }
@@ -301,7 +279,6 @@ tbody tr:hover { background: rgba(255,255,255,0.05); }
     gap: 15px;
 }
 
-/* Spinner CSS */
 .spinner {
     width: 40px;
     height: 40px;
@@ -313,9 +290,10 @@ tbody tr:hover { background: rgba(255,255,255,0.05); }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* RESPONSIVE */
+/* === RESPONSIVE MOBILE: MAGIA PER LE TABELLE === */
 @media (max-width: 768px) {
     .menu-btn { display: flex; }
+    
     .sidebar { 
         position: fixed; 
         left: 0; 
@@ -325,9 +303,47 @@ tbody tr:hover { background: rgba(255,255,255,0.05); }
         width: 280px; 
     }
     .sidebar.open { transform: translateX(0); }
-    .main-content { padding: 80px 20px 30px 20px; }
+    
+    .main-content { padding: 80px 15px 30px 15px; }
     h1 { font-size: 1.8rem; }
     .podium { gap: 15px; }
+
+    /* Trasforma la tabella in schede (Cards) */
+    .table-container { background: transparent; box-shadow: none; }
+    table { display: block; width: 100%; }
+    thead { display: none; /* Nasconde l'intestazione classica */ }
+    tbody { display: block; width: 100%; }
+    
+    tbody tr { 
+        display: block; 
+        background: var(--bg-card); 
+        margin-bottom: 15px; 
+        border-radius: 12px; 
+        padding: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    td { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 10px 15px; 
+        text-align: right; 
+        border-bottom: 1px solid rgba(255,255,255,0.03); 
+    }
+    
+    td:last-child { border-bottom: none; }
+    .text-left { text-align: right; padding-left: 15px; }
+
+    /* Mostra le etichette delle colonne prendendole dall'attributo data-label */
+    td::before { 
+        content: attr(data-label); 
+        font-weight: 600; 
+        color: var(--text-muted); 
+        text-transform: uppercase; 
+        font-size: 0.8rem; 
+    }
 }
 </style>
 
@@ -381,7 +397,6 @@ tbody tr:hover { background: rgba(255,255,255,0.05); }
 </main>
 
 <script>
-// Logica del menu Mobile
 function toggleMenu() {
     document.getElementById("sidebar").classList.toggle("open");
 }
@@ -398,7 +413,6 @@ function switchView(viewName) {
     }
 }
 
-// Caricamento Dati
 async function loadData() {
     try {
         const response = await fetch("https://fantamondiale-j1aq.vercel.app/");
@@ -417,7 +431,6 @@ async function loadData() {
     }
 }
 
-// Render Vista 1
 function renderClassificaPartecipanti(players) {
     const podium = document.getElementById("podium");
     const tbody = document.getElementById("tableBodyClassifica");
@@ -435,22 +448,22 @@ function renderClassificaPartecipanti(players) {
             </div>`;
     });
 
+    // Aggiunti attributi data-label ad ogni td
     players.forEach((player, index) => {
         const drClass = player.dr > 0 ? "green" : player.dr < 0 ? "red" : "";
         tbody.innerHTML += `
             <tr>
-                <td class="rank">${index + 1}</td>
-                <td style="font-weight: 600;">${player.participant}</td>
-                <td>${player.pg}</td>
-                <td>${player.gf}</td>
-                <td>${player.gs}</td>
-                <td class="${drClass}">${player.dr > 0 ? '+'+player.dr : player.dr}</td>
-                <td class="points">${player.totale}</td>
+                <td data-label="#" class="rank">${index + 1}</td>
+                <td data-label="Partecipante" style="font-weight: 600;">${player.participant}</td>
+                <td data-label="PG">${player.pg}</td>
+                <td data-label="GF">${player.gf}</td>
+                <td data-label="GS">${player.gs}</td>
+                <td data-label="DR" class="${drClass}">${player.dr > 0 ? '+'+player.dr : player.dr}</td>
+                <td data-label="Punti" class="points">${player.totale}</td>
             </tr>`;
     });
 }
 
-// Render Vista 2
 function renderSquadre(participants) {
     const container = document.getElementById("teamsContainer");
     participants.forEach(p => {
@@ -463,25 +476,25 @@ function renderSquadre(participants) {
     });
 }
 
-// Render Vista 3
 function renderClassificaMondiale(teams) {
     const tbody = document.getElementById("tableBodyMondiale");
+    
+    // Aggiunti attributi data-label ad ogni td
     teams.forEach((team, index) => {
         const drClass = team.dr > 0 ? "green" : team.dr < 0 ? "red" : "";
         tbody.innerHTML += `
             <tr>
-                <td class="rank">${index + 1}</td>
-                <td style="font-weight: 600; text-align: left; padding-left: 30px;">${team.team}</td>
-                <td>${team.pg}</td>
-                <td>${team.gf}</td>
-                <td>${team.gs}</td>
-                <td class="${drClass}">${team.dr > 0 ? '+'+team.dr : team.dr}</td>
-                <td class="points">${team.punti}</td>
+                <td data-label="#" class="rank">${index + 1}</td>
+                <td data-label="Nazionale" class="text-left">${team.team}</td>
+                <td data-label="PG">${team.pg}</td>
+                <td data-label="GF">${team.gf}</td>
+                <td data-label="GS">${team.gs}</td>
+                <td data-label="DR" class="${drClass}">${team.dr > 0 ? '+'+team.dr : team.dr}</td>
+                <td data-label="Punti" class="points">${team.punti}</td>
             </tr>`;
     });
 }
 
-// Avvia tutto
 loadData();
 </script>
 

@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* VARIABILI DI COLORE */
 :root {
     --bg-main: #0b1120;
     --bg-sidebar: #131c31;
@@ -37,7 +36,7 @@ body { background: var(--bg-main); color: var(--text-main); display: flex; heigh
 
 .sidebar nav button {
     background: transparent; border: 1px solid transparent; color: var(--text-muted); 
-    text-align: left; padding: 14px 20px; font-size: 1rem; font-weight: 600;
+    text-align: left; padding: 14px 20px; font-size: 0.95rem; font-weight: 600;
     border-radius: 12px; cursor: pointer; transition: all 0.3s ease;
 }
 
@@ -92,10 +91,13 @@ h1::after { content: ''; display: block; width: 60px; height: 4px; background: v
 /* TABELLE DESKTOP */
 .table-container { 
     background: var(--bg-card); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
-    overflow: hidden; /* Niente più barra di scorrimento qui */
+    overflow-x: auto; /* Permette scorrimento orizzontale se serve */
+    scrollbar-width: thin; scrollbar-color: var(--accent) rgba(0,0,0,0.2);
 }
+.table-container::-webkit-scrollbar { height: 8px; }
+.table-container::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
 
-table { width: 100%; border-collapse: collapse; }
+table { width: 100%; border-collapse: collapse; white-space: nowrap; }
 thead { background: rgba(0,0,0,0.2); }
 th { padding: 18px 15px; text-align: center; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; }
 td { padding: 18px 15px; text-align: center; font-weight: 400; }
@@ -111,7 +113,7 @@ tbody tr:hover { background: rgba(255,255,255,0.05); }
 
 /* MOBILE / SCHERMI PICCOLI */
 .menu-btn {
-    display: none; position: fixed; top: 20px; right: 20px;
+    display: none; position: fixed; top: 20px; left: 20px; /* SPOSTATO A SINISTRA */
     background: var(--accent); color: #000; border: none; font-size: 1.5rem; 
     width: 45px; height: 45px; border-radius: 50%; cursor: pointer; z-index: 1001; 
     box-shadow: 0 4px 10px rgba(0,0,0,0.3); align-items: center; justify-content: center;
@@ -125,16 +127,16 @@ tbody tr:hover { background: rgba(255,255,255,0.05); }
     .menu-btn { display: flex; }
     .sidebar { position: fixed; left: 0; top: 0; height: 100%; transform: translateX(-100%); width: 280px; }
     .sidebar.open { transform: translateX(0); }
-    .main-content { padding: 80px 10px 30px 10px; } /* Riduco padding per fare spazio alla tabella */
-    h1 { font-size: 1.8rem; }
+    /* Padding aggiustato per dare spazio al bottone a sinistra */
+    .main-content { padding: 80px 10px 30px 10px; } 
+    h1 { font-size: 1.8rem; margin-left: 55px; } /* Sposto il titolo per non finire sotto il bottone */
     .header-container { flex-direction: column; align-items: flex-start; }
     
-    /* OTTIMIZZAZIONE TABELLA MOBILE PER EVITARE SCROLL Orizzontale */
-    table { font-size: 0.75rem; } /* Font più piccolo per farci stare tutto */
-    th { padding: 12px 3px; font-size: 0.7rem; letter-spacing: 0; } /* Riduco i margini interni delle intestazioni */
-    td { padding: 12px 3px; } /* Riduco i margini interni delle celle */
-    .text-left { padding-left: 10px; font-size: 0.75rem; } /* Allineo meglio i nomi stringendo a sinistra */
-    .points { font-size: 0.9rem; } /* Punti leggermente più piccoli ma visibili */
+    table { font-size: 0.75rem; } 
+    th { padding: 12px 5px; font-size: 0.7rem; }
+    td { padding: 12px 5px; } 
+    .text-left { padding-left: 10px; font-size: 0.75rem; } 
+    .points { font-size: 0.9rem; } 
     .rank { font-size: 0.75rem; }
 }
 </style>
@@ -147,6 +149,7 @@ tbody tr:hover { background: rgba(255,255,255,0.05); }
     <h2>🏆 Fanta</h2>
     <nav>
         <button id="btn-classifica" class="active" onclick="switchView('classifica')">Classifica Generale</button>
+        <button id="btn-bonus" onclick="switchView('bonus')">Bonus Fasi Finali</button>
         <button id="btn-squadre" onclick="switchView('squadre')">Rose Partecipanti</button>
         <button id="btn-mondiale" onclick="switchView('mondiale')">Statistiche Nazionali</button>
     </nav>
@@ -156,6 +159,7 @@ tbody tr:hover { background: rgba(255,255,255,0.05); }
     
     <div id="loading" class="loading"><div class="spinner"></div>Recupero dati in corso...</div>
 
+    <!-- VISTA 1: CLASSIFICA PRINCIPALE -->
     <div id="view-classifica" class="view">
         <div class="header-container">
             <h1>Classifica Generale</h1>
@@ -163,12 +167,40 @@ tbody tr:hover { background: rgba(255,255,255,0.05); }
         <div id="podium" class="podium"></div>
         <div class="table-container">
             <table>
-                <thead><tr><th>#</th><th class="text-left">Utente</th><th>PG</th><th>GF</th><th>GS</th><th>DR</th><th>Punti</th></tr></thead>
+                <thead><tr><th>#</th><th class="text-left">Utente</th><th>PG</th><th>GF</th><th>GS</th><th>DR</th><th>Pt. Base</th><th>Bonus</th><th>Totale</th></tr></thead>
                 <tbody id="tableBodyClassifica"></tbody>
             </table>
         </div>
     </div>
 
+    <!-- VISTA 2: BONUS FASI MONDiali -->
+    <div id="view-bonus" class="view">
+        <div class="header-container">
+            <h1>Bonus Fasi Finali</h1>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="text-left">Partecipante</th>
+                        <th>Slot</th>
+                        <th class="text-left">Squadra</th>
+                        <th>Fascia</th>
+                        <th>Pt/Fase</th>
+                        <th>16esimi</th>
+                        <th>Ottavi</th>
+                        <th>Quarti</th>
+                        <th>Semi</th>
+                        <th>Finale</th>
+                        <th>Tot Sq.</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBodyBonus"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- VISTA 3: SQUADRE -->
     <div id="view-squadre" class="view">
         <div class="header-container">
             <h1>Rose Partecipanti</h1>
@@ -176,6 +208,7 @@ tbody tr:hover { background: rgba(255,255,255,0.05); }
         <div id="teamsContainer" class="teams-grid"></div>
     </div>
 
+    <!-- VISTA 4: MONDIALE -->
     <div id="view-mondiale" class="view">
         <div class="header-container">
             <h1>Statistiche Nazionali</h1>
@@ -217,6 +250,7 @@ async function loadData() {
         globalMondialeData = data.classifica_mondiale;
 
         renderClassificaPartecipanti(data.classifica_partecipanti);
+        renderBonus(data.dettagli_bonus);
         renderSquadre(data.squadre_partecipanti);
         renderClassificaMondiale(globalMondialeData);
 
@@ -247,7 +281,43 @@ function renderClassificaPartecipanti(players) {
             <td class="text-left">${player.participant}</td><td>${player.pg}</td>
             <td>${player.gf}</td><td>${player.gs}</td>
             <td class="${drClass}">${player.dr > 0 ? '+'+player.dr : player.dr}</td>
+            <td>${player.punti_partite}</td>
+            <td style="color: var(--success); font-weight: bold;">+${player.bonus}</td>
             <td class="points">${player.totale}</td></tr>`;
+    });
+}
+
+function renderBonus(bonusData) {
+    const tbody = document.getElementById("tableBodyBonus");
+    tbody.innerHTML = "";
+
+    bonusData.forEach(p => {
+        p.squadre.forEach((sq, i) => {
+            const getIcon = (val) => val ? `<span style="color: var(--success); font-weight: bold; font-size: 1.1rem;">X</span>` : `<span style="color: rgba(255,255,255,0.2);">-</span>`;
+            
+            const sed = getIcon(sq.sedicesimi);
+            const ott = getIcon(sq.ottavi);
+            const qua = getIcon(sq.quarti);
+            const sem = getIcon(sq.semifinale);
+            const fin = getIcon(sq.finale);
+
+            const partName = i === 0 ? `<strong style="color:var(--accent); font-size:1.1rem;">${p.participant}</strong><br><span style="font-size:0.8rem;color:var(--text-muted)">Tot. Bonus: +${p.bonus_totale}</span>` : `<span style="opacity:0.3">${p.participant}</span>`;
+
+            tbody.innerHTML += `<tr>
+                <td class="text-left">${partName}</td>
+                <td>${sq.slot}</td>
+                <td class="text-left" style="font-weight:600">${sq.squadra}</td>
+                <td>${sq.fascia}</td>
+                <td>+${sq.bonus_per_fase}</td>
+                <td>${sed}</td>
+                <td>${ott}</td>
+                <td>${qua}</td>
+                <td>${sem}</td>
+                <td>${fin}</td>
+                <td class="points">+${sq.punti_bonus_squadra}</td>
+            </tr>`;
+        });
+        tbody.innerHTML += `<tr style="background: rgba(255,255,255,0.05); height: 5px;"><td colspan="11" style="padding:0;"></td></tr>`;
     });
 }
 

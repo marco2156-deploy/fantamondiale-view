@@ -6,218 +6,205 @@
 <title>Fantamondiale</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+
+body { background: #0f172a; color: white; display: flex; height: 100vh; overflow: hidden; }
+
+/* LAYOUT: Sidebar e Main Content */
+.sidebar {
+    width: 250px;
+    background: #1e293b;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    z-index: 1000;
 }
 
-body{
-    background:#0f172a;
-    color:white;
-    padding:30px;
+.sidebar h2 { margin-bottom: 30px; text-align: center; color: #facc15; font-size: 1.8rem; }
+
+.sidebar nav { display: flex; flex-direction: column; gap: 15px; }
+
+.sidebar nav button {
+    background: none; border: none; color: white; text-align: left;
+    padding: 12px 15px; font-size: 1.1rem; border-radius: 8px;
+    cursor: pointer; transition: background 0.2s;
 }
 
-.container{
-    max-width:1200px;
-    margin:auto;
+.sidebar nav button:hover { background: #334155; }
+.sidebar nav button.active { background: #facc15; color: #0f172a; font-weight: bold; }
+
+.main-content {
+    flex: 1; padding: 40px; overflow-y: auto; position: relative;
 }
 
-h1{
-    text-align:center;
-    margin-bottom:30px;
-    font-size:3rem;
+/* Tasto Hamburger per Mobile */
+.menu-btn {
+    display: none; position: fixed; top: 15px; left: 15px;
+    background: #facc15; color: #0f172a; border: none;
+    font-size: 1.5rem; padding: 8px 12px; border-radius: 8px;
+    cursor: pointer; z-index: 1001; font-weight: bold;
 }
 
-.podium{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
-    margin-bottom:30px;
-}
+h1 { text-align: center; margin-bottom: 30px; font-size: 2.5rem; }
 
-.card{
-    padding:20px;
-    border-radius:16px;
-    text-align:center;
-    color:black;
-    font-weight:bold;
-}
+/* SEZIONE 1: CLASSIFICA PARTECIPANTI */
+.podium { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+.card { padding: 20px; border-radius: 16px; text-align: center; color: black; font-weight: bold; }
+.gold { background: #FFD700; } .silver { background: #C0C0C0; } .bronze { background: #CD7F32; }
+.card .medal { font-size: 3rem; }
 
-.gold{
-    background:#FFD700;
-}
+/* SEZIONE 2: SQUADRE PARTECIPANTI */
+.teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.team-card { background: #1e293b; padding: 20px; border-radius: 12px; border-top: 4px solid #facc15; }
+.team-card h3 { color: #facc15; margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+.team-card ul { list-style: none; }
+.team-card li { padding: 8px 0; border-bottom: 1px dashed #334155; }
+.team-card li:last-child { border-bottom: none; }
 
-.silver{
-    background:#C0C0C0;
-}
+/* TABELLE GENERICHE */
+.table-container { overflow-x: auto; background: #1e293b; border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+thead { background: #334155; }
+th, td { padding: 14px; text-align: center; }
+tbody tr { border-bottom: 1px solid #334155; }
+tbody tr:hover { background: #293548; }
 
-.bronze{
-    background:#CD7F32;
-}
+.green { color: #22c55e; font-weight: bold; }
+.red { color: #ef4444; font-weight: bold; }
+.points { color: #facc15; font-weight: bold; }
+.rank { font-weight: bold; }
 
-.card .medal{
-    font-size:3rem;
-}
+.loading { text-align: center; font-size: 1.5rem; margin-top: 50px; }
 
-.table-container{
-    overflow-x:auto;
-}
+/* VISTE (Nascoste di default) */
+.view { display: none; }
+.view.active { display: block; }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    background:#1e293b;
-    border-radius:12px;
-    overflow:hidden;
-}
-
-thead{
-    background:#334155;
-}
-
-th,
-td{
-    padding:14px;
-    text-align:center;
-}
-
-tbody tr{
-    border-bottom:1px solid #334155;
-}
-
-tbody tr:hover{
-    background:#293548;
-}
-
-.green{
-    color:#22c55e;
-    font-weight:bold;
-}
-
-.red{
-    color:#ef4444;
-    font-weight:bold;
-}
-
-.points{
-    color:#facc15;
-    font-weight:bold;
-}
-
-.rank{
-    font-weight:bold;
-}
-
-.loading{
-    text-align:center;
-    font-size:1.5rem;
-    margin-top:50px;
+/* RESPONSIVE MOBILE */
+@media (max-width: 768px) {
+    .menu-btn { display: block; }
+    .sidebar { position: fixed; left: 0; top: 0; height: 100%; transform: translateX(-100%); width: 280px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { padding: 60px 20px 20px 20px; }
 }
 </style>
 
 </head>
 <body>
 
-<div class="container">
+<button class="menu-btn" onclick="toggleMenu()">☰</button>
 
-    <h1>🏆 Fantamondiale</h1>
+<aside class="sidebar" id="sidebar">
+    <h2>🏆 Fanta</h2>
+    <nav>
+        <button id="btn-classifica" class="active" onclick="switchView('classifica')">Classifica Partecipanti</button>
+        <button id="btn-squadre" onclick="switchView('squadre')">Squadre Partecipanti</button>
+        <button id="btn-mondiale" onclick="switchView('mondiale')">Classifica Mondiale</button>
+    </nav>
+</aside>
 
-    <div id="loading" class="loading">
-        Caricamento...
-    </div>
+<main class="main-content">
+    
+    <div id="loading" class="loading">Caricamento dati in corso...</div>
 
-    <div id="content" style="display:none;">
-
+    <div id="view-classifica" class="view">
+        <h1>Classifica Generale</h1>
         <div id="podium" class="podium"></div>
-
         <div class="table-container">
             <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Partecipante</th>
-                        <th>PG</th>
-                        <th>GF</th>
-                        <th>GS</th>
-                        <th>DR</th>
-                        <th>Punti</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
+                <thead><tr><th>#</th><th>Partecipante</th><th>PG</th><th>GF</th><th>GS</th><th>DR</th><th>Punti</th></tr></thead>
+                <tbody id="tableBodyClassifica"></tbody>
             </table>
         </div>
-
     </div>
 
-</div>
+    <div id="view-squadre" class="view">
+        <h1>Squadre per Partecipante</h1>
+        <div id="teamsContainer" class="teams-grid"></div>
+    </div>
+
+    <div id="view-mondiale" class="view">
+        <h1>Classifica Reale Mondiale</h1>
+        <div class="table-container">
+            <table>
+                <thead><tr><th>#</th><th>Nazionale</th><th>PG</th><th>GF</th><th>GS</th><th>DR</th><th>Punti</th></tr></thead>
+                <tbody id="tableBodyMondiale"></tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
 
 <script>
+// Logica del menu Mobile
+function toggleMenu() {
+    document.getElementById("sidebar").classList.toggle("open");
+}
 
-async function loadRanking() {
+function switchView(viewName) {
+    // Nascondi tutte le viste
+    document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+    // Rimuovi classe active dai bottoni
+    document.querySelectorAll('.sidebar nav button').forEach(el => el.classList.remove('active'));
+    
+    // Mostra la vista scelta e attiva il bottone
+    document.getElementById(`view-${viewName}`).classList.add('active');
+    document.getElementById(`btn-${viewName}`).classList.add('active');
 
+    // Su mobile, chiudi il menu dopo aver cliccato
+    if(window.innerWidth <= 768) {
+        document.getElementById("sidebar").classList.remove("open");
+    }
+}
+
+// Caricamento Dati
+async function loadData() {
     try {
-
-        const response = await fetch(
-            "https://fantamondiale-j1aq.vercel.app/"
-        );
-
+        const response = await fetch("https://fantamondiale-j1aq.vercel.app/");
         const data = await response.json();
 
-        data.sort((a,b) => {
-            if (b.totale !== a.totale) {
-                return b.totale - a.totale;
-            }
-            return b.dr - a.dr;
-        });
+        // 1. Renderizza Classifica Partecipanti
+        renderClassificaPartecipanti(data.classifica_partecipanti);
+        
+        // 2. Renderizza Squadre
+        renderSquadre(data.squadre_partecipanti);
 
-        createPodium(data);
-        createTable(data);
+        // 3. Renderizza Classifica Mondiale
+        renderClassificaMondiale(data.classifica_mondiale);
 
+        // Nascondi loading e mostra la prima vista
         document.getElementById("loading").style.display = "none";
-        document.getElementById("content").style.display = "block";
+        document.getElementById("view-classifica").classList.add("active");
 
     } catch(error) {
-        document.getElementById("loading").innerHTML =
-            "Errore nel caricamento dei dati";
+        document.getElementById("loading").innerHTML = "Errore nel caricamento dei dati.";
         console.error(error);
     }
 }
 
-function createPodium(players){
-
+// Render Vista 1
+function renderClassificaPartecipanti(players) {
     const podium = document.getElementById("podium");
+    const tbody = document.getElementById("tableBodyClassifica");
 
-    const medals = ["🥇","🥈","🥉"];
-    const classes = ["gold","silver","bronze"];
+    const medals = ["🥇", "🥈", "🥉"];
+    const classes = ["gold", "silver", "bronze"];
 
-    players.slice(0,3).forEach((player,index)=>{
-
+    // Podio
+    players.slice(0, 3).forEach((player, index) => {
         podium.innerHTML += `
             <div class="card ${classes[index]}">
                 <div class="medal">${medals[index]}</div>
                 <h2>${player.participant}</h2>
                 <p>${player.totale} punti</p>
                 <p>DR ${player.dr > 0 ? '+'+player.dr : player.dr}</p>
-            </div>
-        `;
+            </div>`;
     });
-}
 
-function createTable(players){
-
-    const tbody = document.getElementById("tableBody");
-
-    players.forEach((player,index)=>{
-
-        const drClass =
-            player.dr > 0
-            ? "green"
-            : player.dr < 0
-            ? "red"
-            : "";
-
+    // Tabella
+    players.forEach((player, index) => {
+        const drClass = player.dr > 0 ? "green" : player.dr < 0 ? "red" : "";
         tbody.innerHTML += `
             <tr>
                 <td class="rank">${index + 1}</td>
@@ -225,17 +212,45 @@ function createTable(players){
                 <td>${player.pg}</td>
                 <td>${player.gf}</td>
                 <td>${player.gs}</td>
-                <td class="${drClass}">
-                    ${player.dr > 0 ? '+'+player.dr : player.dr}
-                </td>
+                <td class="${drClass}">${player.dr > 0 ? '+'+player.dr : player.dr}</td>
                 <td class="points">${player.totale}</td>
-            </tr>
-        `;
+            </tr>`;
     });
 }
 
-loadRanking();
+// Render Vista 2
+function renderSquadre(participants) {
+    const container = document.getElementById("teamsContainer");
+    participants.forEach(p => {
+        let liTeams = p.teams.map(t => `<li>${t}</li>`).join('');
+        container.innerHTML += `
+            <div class="team-card">
+                <h3>${p.participant}</h3>
+                <ul>${liTeams}</ul>
+            </div>`;
+    });
+}
 
+// Render Vista 3
+function renderClassificaMondiale(teams) {
+    const tbody = document.getElementById("tableBodyMondiale");
+    teams.forEach((team, index) => {
+        const drClass = team.dr > 0 ? "green" : team.dr < 0 ? "red" : "";
+        tbody.innerHTML += `
+            <tr>
+                <td class="rank">${index + 1}</td>
+                <td>${team.team}</td>
+                <td>${team.pg}</td>
+                <td>${team.gf}</td>
+                <td>${team.gs}</td>
+                <td class="${drClass}">${team.dr > 0 ? '+'+team.dr : team.dr}</td>
+                <td class="points">${team.punti}</td>
+            </tr>`;
+    });
+}
+
+// Avvia tutto
+loadData();
 </script>
 
 </body>
